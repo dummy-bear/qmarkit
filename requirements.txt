@@ -1,0 +1,16 @@
+Package           Version
+----------------- ------------
+asgiref           3.7.2
+Django            3.2.25
+django-ckeditor   6.3.2
+django-js-asset   2.0.0
+mysqlclient       2.1.1
+Pillow            9.5.0
+pip               24.0
+pkg_resources     0.0.0
+pypng             0.20220715.0
+pytz              2024.1
+qrcode            7.4.2
+setuptools        40.8.0
+sqlparse          0.4.4
+typing_extensions 4.7.1
