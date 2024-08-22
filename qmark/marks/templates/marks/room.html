@@ -1,0 +1,30 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}Список оборудования в помещении{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+    <section class="all-posts">
+        <div class="container">
+            <h1 class="my-4 text-center">Помещениe: {{room}}</h1>
+            <div class="row">
+				<table border=2>
+					<tr><th>помещение</th><th>инв.номер</th><th>наименование</th></tr>
+                {% for thing in things %}
+                    <tr>
+                                <td><a href="/room/{{thing.room}}">{{thing.room}}</a> </td>
+                                <td><a href="/thing/{{thing.url}}"> {{thing.number|safe|truncatechars:100 }} </a></td>
+                                <td> {{thing.name|safe|truncatechars:200 }}</td>
+                    </tr>
+                    
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

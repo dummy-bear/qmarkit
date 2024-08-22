@@ -1,0 +1,37 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}Список моих вещей{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+    <section class="all-posts">
+        <div class="container">
+			{% if user.is_authenticated %}
+				<h1 class="my-4 text-center">Чего есть у {{user}}:</h1>
+            {% else %}
+				<h1 class="my-4 text-center">Общедоступные штуки:</h1>
+			{% endif %}
+            <div class="row">
+				<table border=2>
+					<tr><th>инв.номер</th><th>наименование</th></tr>
+                {% for thing in things %}
+                    <tr>
+                        
+                                <td><a href="/thing/{{thing.url}}"> {{thing.number|safe|truncatechars:100 }} </a></td>
+                                <td> {{thing.name|safe|truncatechars:200 }}</td>
+                    </tr>
+                    
+                {% endfor %}
+                </table>
+            </div>
+                    <div class="button">
+			<h3><a href="add">+</a></h3>
+        </div>
+        </div>
+
+    </section>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}Описание предмета{% endblock %}
+
+{% block header %}
+    {% include './block/header.html' %}
+{% endblock %}
+
+{% block content %}
+    <section class="all-posts">
+        <div class="container">
+			{% if user.is_authenticated %}
+				<h1 class="my-4 text-center">Добавляем предмет:</h1>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+					<p> Название {{ thing_form.name }} </p>
+					<p> идентификатор {{ thing_form.number }} </p>
+					<p> фотография {{ thing_form.image }} </p>
+                    <p> Описание {{ thing_form.description }} </p>
+                </div>
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </form>
+				
+				
+				
+				
+				
+				
+            {% else %}
+				<h1 class="my-4 text-center">Авторизуйтесь, чтобы добавить предмет</h1>
+			{% endif %}
+			
+			
+		</div>
+	</section>
+	
+<!--	
+{% for comment in thing.comments.all %}
+<div class="d-flex">
+    <div class="flex-shrink-0">
+        <img class="rounded-circle" src="http://placehold.it/50x50" alt="">
+    </div>
+    <div class="flex-grow-1 ms-3">
+        <p class="mt-0">{{comment.username}} [{{comment.created_date}}]</p>
+        {% if comment.image %}
+			<img class="img-fluid rounded" src="{{comment.image.url }}"> <br>
+        {% endif %}
+        {{comment.text}}
+    </div>
+</div>
+{% endfor %}
+<div class="card my-4">
+    <h5 class="card-header">Добавить комментарий:</h5>
+    <div class="card-body">
+        {% if user.is_authenticated %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+					{{ comment_form.image }}
+                    {{ comment_form.text }}
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        {% else %}
+            <h6 class="card-body"><a href="{% url 'signin' %}">Авторизуйтесь</a> или <a href="{% url 'signup' %}">зарегистрируйтесь</a> чтобы оставить комментарий</h6>
+        {% endif %}
+    </div>
+</div>
+-->
+{% endblock %}
