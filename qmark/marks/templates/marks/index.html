@@ -11,13 +11,13 @@
     <section class="all-posts">
         <div class="container">
 			{% if user.is_authenticated %}
-				<h1 class="my-4 text-center">Чего есть у {{user}}:</h1>
+				<h1 class="my-4 text-center">Метки пользователя {{user}}:</h1>
             {% else %}
-				<h1 class="my-4 text-center">Общедоступные штуки:</h1>
+				<h1 class="my-4 text-center">Общедоступные метки:</h1>
 			{% endif %}
             <div class="row">
 				<table border=2>
-					<tr><th>инв.номер</th><th>наименование</th></tr>
+					<tr><th>номер</th><th>наименование</th></tr>
                 {% for thing in things %}
                     <tr>
                         

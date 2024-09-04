@@ -5,10 +5,10 @@ from qmark import settings
 
 urlpatterns = [
     path('', MainView.as_view(), name='index'),
-    path('home', HomeView.as_view(), name='home'),
+    path('user/<slug>/', HomeView.as_view(), name='user'),
+    path('company/<slug>/', HomeView.as_view(), name='company'),
     path('rooms', RoomsView.as_view(), name='rooms'),
     path('room/<slug>/', RoomView.as_view(), name='post_detail'),
-    path('blog/<slug>/', PostDetailView.as_view(), name='post_detail'),
     path('things', ThingsView.as_view(), name='things'),
     path('thing/<slug>/', ThingDetailView.as_view(), name='thing_detail'),
     path('add', AddView.as_view(), name='add'),

@@ -21,17 +21,26 @@
                         </ol>
                     </nav>
                     <!--    ЭТО ТЕЛО ПОСТА -->
-                    <img class="img-fluid rounded " src="{{ thing.image.url }}" alt="">
+                    
+                    <img class="img-fluid rounded " src="{{ thing.image.url }}" alt=""> <br>
+                    <a href="/media/qr/{{ thing.number }}.png">qr-code</a> <br>
+                    <a href="/media/lbl/{{ thing.number }}.png">наклейка</a> <br>
                     <hr>
                     <p class="lead">
                         {{ thing.description|safe }}
                     </p>
-
-                    <hr>
                     <div class="d-flex justify-content-between">
-                        <div class="lead">Записано на: {{ thing.author }}</div>
-                        <div> {{ thing.created_at }}</div>
+                        <p>
+							<div class="lead">Записано на: {{ thing.author }}</div>
+							<div> {{ thing.created_at }}</div>
+						</p>
+                        
                     </div>
+                    <hr>
+					<div>Доступность: {{ thing.visible }}</div>
+                    
+                    
+                    
                     <hr>
                     <!--    ЭТО КОМПОНЕНТ С КОММЕНТАРИЯМИ -->
                     {% include './block/comments.html' %}

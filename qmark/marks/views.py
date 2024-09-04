@@ -1,13 +1,16 @@
 from django.core.paginator import Paginator
+from django.core.files.storage import default_storage
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 
+from PIL import Image, ImageEnhance, ImageOps, ImageGrab,ImageDraw, ImageFont
 from .models import Post, Thing, Room, Comment
 from .forms import SignUpForm, SignInForm, CommentForm, AddThingForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 
+import os,qrcode
 
 class MainView(View):
 	def get(self, request, *args, **kwargs):
@@ -21,6 +24,8 @@ class MainView(View):
 			things = Thing.objects.filter(author=request.user).order_by('-created_at')
 		else:
 			things = Thing.objects.filter(visible='a').order_by('-created_at')
+		
+		paginator = Paginator(things, 60)
 			
 		return render(request, 'marks/index.html', context={
             'page_obj': page_obj, 'things': things, 
@@ -102,17 +107,58 @@ class AddView(View):
 					tag='')
 		else:
 			print("form is not valid")			
-		things = Thing.objects.all().order_by('-created_at')
-		return render(request, 'marks/room.html', context={
-            'things': things, 'room': "any room"})
-		
+		things = Thing.objects.filter(author=request.user).order_by('-created_at')
+		#comment_form = CommentForm()
+		#return render(request, 'marks/thing_detail.html', context={
+		#	'comment_form': comment_form })
+		return render(request, 'marks/index.html', context={
+             'things': things, 
+        })
+        
 
 class ThingDetailView(View):
+	def make_labels(self, name, url):
+		qr_img = "media/qr/"+url+'.png';
+		lbl_img = "media/lbl/"+url+'.png';
+		
+		img=qrcode.make("https://qmarkit.ru/thing/"+url+"?src=qr")
+		img.save(qr_img)
+		print(img.format, img.size, img.mode)
+		w=img.size[0]*3
+		h=img.size[1]
+		im = Image.new("L", (w, h))
+		
+		im.paste(img)
+			
+		idraw = ImageDraw.Draw(im)
+		idraw.rectangle( (370,0,3*370,370),	255)
+		text = "https://qmarkit.ru/thing/"+url
+			
+		# подключаем Font и задаем высоту в пикселях
+		font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeSans.ttf", size=38)
+		# вычисляем длину надписи 
+		textlength = idraw.textlength(text, font)
+		# вычисляем положение надписи на скриншоте, например по ширине
+		# ширина скриншота - длина надписи - граница 2px + 10px
+		size = (400, im.size[1]-88)
+			
+		idraw.text(size, text, font=font, fill='black')
+		idraw.text((400,40), name , font=font, fill='black')
+			
+		im.save(lbl_img)
+		return
+	
 	def get(self, request, slug, *args, **kwargs):
 		thing = get_object_or_404(Thing, url=slug)
 		comment_form = CommentForm()
 		
 		print(thing)
+		qr_img = "media/qr/"+thing.url+'.png';
+		lbl_img = "media/lbl/"+thing.url+'.png';
+		if os.path.isfile(lbl_img+"www"):
+			print(qr_img, "qr exists")
+		else:
+			self.make_labels(thing.name, thing.url)
 		
 		return render(request, 'marks/thing_detail.html', context={
 		'thing': thing, 'comment_form': comment_form })
@@ -122,6 +168,7 @@ class ThingDetailView(View):
 		if comment_form.is_valid():
 			if request.FILES:
 				image = request.FILES['image']
+				print ("upload:",image)
 			else:
 				image=''
 			text = request.POST['text']
