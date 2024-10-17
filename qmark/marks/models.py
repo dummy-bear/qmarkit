@@ -21,10 +21,18 @@ class Organization(models.Model):
     name = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-   
+		
     def __str__(self):
         return self.name
 
+class Company(models.Model):
+	name = models.TextField()
+	description = RichTextUploadingField(null=True, blank=True)
+	prefix = models.CharField(max_length=20)
+	members = models.ManyToManyField(User)
+	
+	def __str__(self):
+		return self.name
 
 class Room(models.Model):
 	number = models.CharField(max_length=200)
@@ -32,6 +40,7 @@ class Room(models.Model):
 	url = models.SlugField(null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
+	company = models.ForeignKey(Company, null=True, blank=True, default=None, on_delete=models.CASCADE)
 	   
 	def __str__(self):
 		return self.number
@@ -39,7 +48,10 @@ class Room(models.Model):
 class Thing(models.Model):
     name = models.CharField(max_length=200)
     number = models.CharField(max_length=200)
-    visible = models.CharField(max_length=2, default='u')
+    visible = models.CharField(max_length=2, default='ic')
+    #доступность: u-только пользователю, c-только компании, i-только по id, a-всем
+    #комменты: u-только владельцу, c-только компании, s-всем но премодерация, a-всем
+    company = models.ForeignKey(Company, null=True, blank=True, default=None, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, null=True, blank=True, default=None, on_delete=models.CASCADE)
     url = models.SlugField()
     description = RichTextUploadingField(null=True, blank=True)

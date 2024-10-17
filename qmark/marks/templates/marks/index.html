@@ -11,14 +11,22 @@
     <section class="all-posts">
         <div class="container">
 			{% if user.is_authenticated %}
+				<h1 class="my-4 text-center">Компании {{user}}:</h1>
+				{% for comp in comps %}
+				<a href="/company/{{comp.id}}"> {{comp.name|safe|truncatechars:100 }} </a>
+				{% endfor %}
+				
 				<h1 class="my-4 text-center">Метки пользователя {{user}}:</h1>
             {% else %}
 				<h1 class="my-4 text-center">Общедоступные метки:</h1>
 			{% endif %}
+			
+			
+			
             <div class="row">
 				<table border=2>
 					<tr><th>номер</th><th>наименование</th></tr>
-                {% for thing in things %}
+                {% for thing in page_obj %}
                     <tr>
                         
                                 <td><a href="/thing/{{thing.url}}"> {{thing.number|safe|truncatechars:100 }} </a></td>
@@ -33,5 +41,39 @@
         </div>
         </div>
 
+    </section>
+{% endblock %}
+
+{% block pagination %}
+    <section class="my-pagination">
+      <nav aria-label="Paginate me">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Предыдущая</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Предыдущая</a>
+                </li>
+            {% endif %}
+            {% for page_number in page_obj.paginator.page_range %}
+                {% if page_number == page_obj.number %}
+                    <li class="page-item active"><a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Следующая</a>
+                </li>
+            {% endif %}
+        </ul>
+      </nav>
     </section>
 {% endblock %}

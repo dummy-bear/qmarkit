@@ -23,8 +23,8 @@
                     <!--    ЭТО ТЕЛО ПОСТА -->
                     
                     <img class="img-fluid rounded " src="{{ thing.image.url }}" alt=""> <br>
-                    <a href="/media/qr/{{ thing.number }}.png">qr-code</a> <br>
-                    <a href="/media/lbl/{{ thing.number }}.png">наклейка</a> <br>
+                    <a href="/media/qr/{{ thing.url }}.png">qr-code</a> <br>
+                    <a href="/media/lbl/{{ thing.url }}.png">наклейка</a> <br>
                     <hr>
                     <p class="lead">
                         {{ thing.description|safe }}

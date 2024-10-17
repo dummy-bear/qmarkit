@@ -6,7 +6,7 @@ from qmark import settings
 urlpatterns = [
     path('', MainView.as_view(), name='index'),
     path('user/<slug>/', HomeView.as_view(), name='user'),
-    path('company/<slug>/', HomeView.as_view(), name='company'),
+    path('company/<slug>/', RoomsView.as_view(), name='company'),
     path('rooms', RoomsView.as_view(), name='rooms'),
     path('room/<slug>/', RoomView.as_view(), name='post_detail'),
     path('things', ThingsView.as_view(), name='things'),

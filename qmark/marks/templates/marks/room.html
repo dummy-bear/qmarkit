@@ -23,6 +23,18 @@
                     
                 {% endfor %}
                 </table>
+                Наклейки:
+                <table border=2>
+					
+                {% for thing in things %}
+                    <tr>
+                                
+                                <td><a href="/thing/{{thing.url}}"> {{thing.number|safe|truncatechars:100 }} </a></td>
+                                <td> <img src="/media/lbl/{{ thing.url }}.png" </td>
+                    </tr>
+                    
+                {% endfor %}
+                </table>
             </div>
         </div>
     </section>

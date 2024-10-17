@@ -14,7 +14,7 @@
             <div class="row">
                 {% for room in rooms %}
                     
-                                <p>{{room.number|safe|truncatechars:100 }} - {{room.name|safe|truncatechars:200 }}</p>
+                                <p><a href="/room/{{room.url|safe|truncatechars:100 }}">{{room.number|safe|truncatechars:100 }} - {{room.name|safe|truncatechars:200 }}</a></p>
                     
                 {% endfor %}
             </div>

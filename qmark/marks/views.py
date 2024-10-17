@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views import View
 
 from PIL import Image, ImageEnhance, ImageOps, ImageGrab,ImageDraw, ImageFont
-from .models import Post, Thing, Room, Comment
+from .models import Post, Thing, Room, Comment, Company
 from .forms import SignUpForm, SignInForm, CommentForm, AddThingForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
@@ -22,13 +22,17 @@ class MainView(View):
         
 		if request.user.is_authenticated:
 			things = Thing.objects.filter(author=request.user).order_by('-created_at')
+			comps = Company.objects.filter(members=request.user).order_by('id')
 		else:
 			things = Thing.objects.filter(visible='a').order_by('-created_at')
+			comps = Company.objects.filter(members=0).order_by('id')
 		
-		paginator = Paginator(things, 60)
-			
+		paginator = Paginator(things, 30)
+		page_number = request.GET.get('page')
+		page_obj = paginator.get_page(page_number)
+		
 		return render(request, 'marks/index.html', context={
-            'page_obj': page_obj, 'things': things, 
+            'page_obj': page_obj, 'comps': comps, 'things': things, 
         })
 
 class HomeView(View):
@@ -42,16 +46,64 @@ class HomeView(View):
             'things': things, 
         })
 
+class CompanyView(View):
+	def get(self, request, *args, **kwargs):
+		rooms = Room.objects.filter(company=request.id).order_by('name')
+		return render(request, 'marks/rooms.html', context={
+            'rooms': rooms
+        })
+
 class RoomsView(View):
 	def get(self, request, *args, **kwargs):
-		rooms = Room.objects.all().order_by('-created_at')
+		rooms = Room.objects.all().order_by('name')
 		return render(request, 'marks/rooms.html', context={
             'rooms': rooms
         })
 
 class RoomView(View):
+	def make_labels(self, name, url):
+		qr_img = "media/qr/"+url+'.png';
+		lbl_img = "media/lbl/"+url+'.png';
+		
+		img=qrcode.make("https://qmarkit.ru/thing/"+url+"?src=qr")
+		img.save(qr_img)
+		
+		w=img.size[0]*3
+		h=img.size[1]
+		im = Image.new("L", (w, h))
+		
+		im.paste(img)
+			
+		idraw = ImageDraw.Draw(im)
+		idraw.rectangle( (h,0,w,h),	255)
+		text = "https://qmarkit.ru/thing/"+url
+			
+		# подключаем Font и задаем высоту в пикселях
+		font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeSans.ttf", size=38)
+		# вычисляем длину надписи 
+		textlength = idraw.textlength(text, font)
+		# вычисляем положение надписи на скриншоте, например по ширине
+		# ширина скриншота - длина надписи - граница 2px + 10px
+		size = (w, h-88)
+			
+		idraw.text(size, text, font=font, fill='black')
+		idraw.text((w,40), name , font=font, fill='black')
+			
+		im.save(lbl_img)
+		return
+		
 	def get(self, request, slug, *args, **kwargs):
-		things = Thing.objects.all().order_by('-created_at')
+		room = Room.objects.filter(number=slug)
+		print (room[0].id)
+		things = Thing.objects.filter(room=room[0].id).order_by('-created_at')
+		for thing in things:
+			qr_img = "media/qr/"+thing.url+'.png';
+			lbl_img = "media/lbl/"+thing.url+'.png';
+			if os.path.isfile(lbl_img):
+				print(qr_img, "qr exists")
+			else:
+				self.make_labels(thing.name, thing.url)
+				print("creating image", qr_img)
 		return render(request, 'marks/room.html', context={
             'things': things, 'room': slug
         })
@@ -123,7 +175,7 @@ class ThingDetailView(View):
 		
 		img=qrcode.make("https://qmarkit.ru/thing/"+url+"?src=qr")
 		img.save(qr_img)
-		print(img.format, img.size, img.mode)
+		
 		w=img.size[0]*3
 		h=img.size[1]
 		im = Image.new("L", (w, h))
@@ -131,7 +183,7 @@ class ThingDetailView(View):
 		im.paste(img)
 			
 		idraw = ImageDraw.Draw(im)
-		idraw.rectangle( (370,0,3*370,370),	255)
+		idraw.rectangle( (h,0,3*h,h),	255)
 		text = "https://qmarkit.ru/thing/"+url
 			
 		# подключаем Font и задаем высоту в пикселях
@@ -155,7 +207,7 @@ class ThingDetailView(View):
 		print(thing)
 		qr_img = "media/qr/"+thing.url+'.png';
 		lbl_img = "media/lbl/"+thing.url+'.png';
-		if os.path.isfile(lbl_img+"www"):
+		if os.path.isfile(lbl_img):
 			print(qr_img, "qr exists")
 		else:
 			self.make_labels(thing.name, thing.url)
